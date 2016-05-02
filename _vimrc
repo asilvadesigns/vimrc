@@ -6,6 +6,7 @@ set autoread
 filetype off                                " required
 set rtp+=$vim/vimfiles/bundle/Vundle.vim
 let path='$vim/vimfiles/bundle'
+
 call vundle#begin()
 
 Plugin 'ap/vim-css-color'					" CSS color
@@ -41,16 +42,19 @@ let NERDTreeShowLineNumbers = 1
 """""""""""""""""""""""""""""""
 "	Syntastic
 "
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 
-let g:syntastic_scss_checkers = ['scss_lint']
+let g:syntastic_mode = "passive"
+
+let g:syntastic_scss_checkers = ['']
+"scss_lint"
 
 """""""""""""""""""""""""""""""
 "	Insert
@@ -69,6 +73,7 @@ set guifont=Source_Code_Pro:h14			 	" Set Lucia Console as typeface at size 11
 set guioptions-=T							" Remove toolbar
 set guioptions-=m							" Remove menu bar
 set guioptions-=r							" Remove right-hand scroll bar
+set guioptions-=L							" Remove right-hand scroll bar
 set laststatus=2							" Always show status line
 set linespace=5                          	" Set line height
 set nonu rnu                                " Set Relative Number
@@ -153,55 +158,72 @@ let g:indent_guides_guide_size=1
 let mapleader = ','
 
 " Toggle Nerdtree
-nmap <leader>nt :NERDTreeToggle<cr>
+nnoremap <leader>nt :NERDTreeToggle<cr>
 
 " Toggle IndentGuides
-nmap <leader>ig :IndentGuidesToggle<cr>
+nnoremap <leader>ig :IndentGuidesToggle<cr>
 
 " Open vimrc
-nmap <leader>v :vsplit $vim/_vimrc<cr>
+nnoremap <leader>v :vsplit $vim/_vimrc<cr>
 
 " Open new file in vsplit
-nmap <leader>n :vnew<cr>
+nnoremap <leader>n :vnew<cr>
 
 " Exit current file
-nmap <leader>e :exit<cr>
+nnoremap <leader>e :exit<cr>
+
+" Save current file
+nnoremap <leader>s :w<cr>
+
+" Save all files
+nnoremap <leader>sa :wa<cr>
 
 " Open file explorer
-nmap <leader>x :Explore<cr>
+nnoremap <leader>x :Explore<cr>
 
 " Format Code - Indent
-nmap <leader>f gg=G''0
+nnoremap <leader>f gg=G''0
 
 " Format Code - CSS
-nmap <leader>c :CSScomb<cr>
+nnoremap <leader>c :CSScomb<cr>
 
 " Format Code - HTML
-nmap <leader>h :%s/>\s*</>\r</g<cr> :g/^$/d<cr> ggVGo=<Esc>
+nnoremap <leader>h :%s/>\s*</>\r</g<cr> :g/^$/d<cr> ggVGo=<Esc>
+
+nnoremap <leader>rel :g/^$/d<cr>
+
+" Delete emptylines
+"   function! RemoveEmptyLines() range
+"       s/div/chicken/g
+"   endfunction
+"   command! -range RemoveEmptyLines :<line1>,<line2>call RemoveEmptyLines()
 
 " Paste all tag below
-nmap <leader>pb vatygv<C-[><cr>p
+nnoremap <leader>pb vatygv<c-[>o<cr><c-[>pvat=kdd
+
+" Join tag
+nnoremap <leader>jt JxJx<c-[>
 
 " Toggle invisible characters
-nmap <leader>l :set list!<cr>
+nnoremap <leader>l :set list!<cr>
 
 " Strip whitespace
-nmap <leader>ww :StripWhitespace<cr>
+nnoremap <leader>sw :StripWhitespace<cr>
 
 " Paste all tag below
-"nmap <leader>pa :CSScomb<cr>
+"nnoremap <leader>pa :CSScomb<cr>
 
 " Insert line below on enter
-nmap <cr> o<Esc>
+nnoremap <cr> o<Esc>
 
 " Insert line above on shift enter
-nmap <S-cr> O<Esc>
+nnoremap <S-cr> O<Esc>
 
 " <CR>                    "Search for text and replace
 vnoremap // y/<C-R>
 
 " Visual all
-nmap <leader>sa ggVGo
+nnoremap <leader>va ggVGo
 
 " Set syntax to HTML
 command! Sethtml :set filetype=html syntax=html<cr>
@@ -216,8 +238,8 @@ command! Setscss :set filetype=scss syntax=scss<cr>
 "	Tabularize
 "
 "if exists(":Tabularize")
-nmap <leader>a: :Tabularize /:\zs<cr>
-nmap <leader>a{ :Tabularize /{<cr>
+nnoremap <leader>a: :Tabularize /:\zs<cr>
+nnoremap <leader>a{ :Tabularize /{<cr>
 "endif
 
 "  Split and Tab Controls
@@ -243,7 +265,7 @@ let g:indentLine_char = '.'
 let g:ctrlp_working_path_mode = 'r'
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_custom_ignore = 'node_modules\'
+let g:ctrlp_custom_ignore = '\v[\/](\.git|_site|node_modules)$'
 hi CtrlPMatch ctermbg=235 ctermfg=250 guibg=#99cccc guifg=#333333 cterm=NONE gui=NONE
 hi CtrlPPrtBase ctermbg=235 ctermfg=250 guibg=#ffcc66 guifg=#333333 cterm=NONE gui=NONE
 
@@ -279,7 +301,7 @@ inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
 "	Tabularize
 "
 if exists(":Tabularize")
-    nmap <leader>a: :Tabularize /:\zs<cr>
+    nnoremap <leader>a: :Tabularize /:\zs<cr>
 endif
 "   function! s:align()
 "       let p = '^\s*|\s.*\s|\s*$'
@@ -291,3 +313,12 @@ endif
 "           call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
 "       endif
 "   endfunction
+
+"""""""""""""""""""""""""""""""
+"	Notes
+"
+"   How to delete everything after X
+"   :s/\(X\).*//g
+"
+"   How to delete text in command line
+"   <c-w> or <c-u>
