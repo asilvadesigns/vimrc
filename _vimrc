@@ -13,9 +13,11 @@ Plugin 'ap/vim-css-color'					" CSS color
 Plugin 'bling/vim-airline'					" Airline
 Plugin 'cakebaker/scss-syntax.vim'		    " SCSS syntax
 Plugin 'csscomb/vim-csscomb'				" CSS comb
+Plugin 'digitaltoad/vim-jade'	  			" Jade syntax
 Plugin 'gmarik/Vundle.vim'              	" Required
 Plugin 'godlygeek/tabular'                  " Align text
 Plugin 'hail2u/vim-css3-syntax'			    " CSS3 syntax
+Plugin 'vim-scripts/AutoComplPop'			" AutoComlPop menu
 Plugin 'kien/ctrlp.vim'	  					" CtrlP
 Plugin 'mattn/emmet-vim'                	" Emmet
 Plugin 'matze/vim-move'						" Vim move
@@ -57,6 +59,12 @@ let g:syntastic_scss_checkers = ['']
 "scss_lint"
 
 """""""""""""""""""""""""""""""
+"	Omnicomplete
+"
+set omnifunc=csscomplete#Complete
+set omnifunc=javascriptcomplete#CompleteJS
+
+"""""""""""""""""""""""""""""""
 "	Insert
 "
 set backspace=2								" Allow backspace to erase in insert mode
@@ -85,6 +93,8 @@ set shiftwidth=4					   	 	" Change indent size. Default: 8
 set sidescroll=1							" Scroll sideways 1 char at a time
 set sidescrolloff=5                         " Same for side
 set tabstop=4						   	 	" Change tab size. Default: 8
+set shiftwidth=4
+set expandtab
 set vb                                      " Disable errorbell
 set virtualedit=all							" Enable virtual edit
 syntax on
@@ -114,21 +124,44 @@ hi scssInclude guifg=#cc99cc gui=NONE
 hi scssMixinParams guifg=#99cccc gui=NONE
 hi scssVariable guifg=#f99157 gui=NONE
 
+hi jsFuncName guifg=#99cccc gui=NONE
+hi jsFuncCall guifg=#99cccc gui=NONE
+hi jsFuncArgs guifg=#ffcc66 gui=NONE
+hi jsFunction guifg=#f2777a gui=NONE
+hi jsStringS guifg=#99cc99 gui=NONE
+hi jsGlobalObjects guifg=#ffcc66 gui=NONE
+hi jsNumber guifg=#cc99cc gui=NONE
+hi jsReturn guifg=#f2777a gui=NONE
+hi jsLabel guifg=#f2777a gui=NONE
+hi jsStatement guifg=#f2777a gui=NONE
+hi jsRepeat guifg=#f2777a gui=NONE
+hi jsConditional guifg=#f2777a gui=NONE
+hi jsThis guifg=#f2777a gui=NONE
+hi jsBooleanFalse guifg=#cc99cc gui=NONE
+hi jsBooleanTrue guifg=#cc99cc gui=NONE
+hi jsBraces guifg=#999999 gui=NONE
+hi jsFuncBraces guifg=#999999 gui=NONE
+hi jsParens guifg=#999999 gui=NONE
+hi jsFuncParens guifg=#999999 gui=NONE
+hi jsNoise guifg=#999999 gui=NONE
+
 " Slash after folder names
 hi NERDTreeDirSlash guifg=#99cccc gui=NONE
-
 " Folder open icon color
 hi NERDTreeOpenable guifg=#f99157 gui=NONE
-
 " Folder close icon color
-hi NERDTreeClosable guifg=#ffcc66 gui=NONE
-
+hi NERDTreeClosable guifg=#99cccc gui=NONE
 " Pipes beside folders color
 hi NERDTreePart guifg=#2d2d2d gui=NONE
 
 hi CursorLineNr guifg=#aaaaaa
 
-"   Detech syntax
+"set fillchars+=vert:\|
+set fillchars=""
+hi VertSplit ctermbg=NONE guibg=NONE
+"""""""""""""""""""""""""""""""
+"	Detect syntax function
+"
 function! SynStack()
     if !exists("*synstack")
         return
@@ -144,16 +177,15 @@ set ignorecase
 set smartcase
 set nohlsearch
 
-
 """""""""""""""""""""""""""""""
 "	Indent Guides
 "
-set ts=4 sw=4 et
-let g:indent_guides_start_level=2
-let g:indent_guides_guide_size=1
+set ts=4 sw=4 noet
+"	let g:indent_guides_start_level=2
+"	let g:indent_guides_guide_size=1
 
 """""""""""""""""""""""""""""""
-"	Custom Hotkeys
+"	Hotkeys
 "
 let mapleader = ','
 
@@ -190,6 +222,7 @@ nnoremap <leader>c :CSScomb<cr>
 " Format Code - HTML
 nnoremap <leader>h :%s/>\s*</>\r</g<cr> :g/^$/d<cr> ggVGo=<Esc>
 
+" Delete empytlines
 nnoremap <leader>rel :g/^$/d<cr>
 
 " Delete emptylines
@@ -207,17 +240,26 @@ nnoremap <leader>jt JxJx<c-[>
 " Toggle invisible characters
 nnoremap <leader>l :set list!<cr>
 
+" Toggle hlsearch
+nnoremap <leader>hs :set hlsearch! hlsearch?<cr>
+
 " Strip whitespace
 nnoremap <leader>sw :StripWhitespace<cr>
-
-" Paste all tag below
-"nnoremap <leader>pa :CSScomb<cr>
 
 " Insert line below on enter
 nnoremap <cr> o<Esc>
 
 " Insert line above on shift enter
 nnoremap <S-cr> O<Esc>
+
+" Prepend HTML Attribute
+nnoremap <leader>pa 0wea<Space>
+
+" Append HTML Attribute
+nnoremap <leader>aa 0w%i<Space>
+
+" Remove first HTML Attribute
+nnoremap <leader>ra 0wewdt"da"<Esc>
 
 " <CR>                    "Search for text and replace
 vnoremap // y/<C-R>
@@ -231,16 +273,23 @@ command! Sethtml :set filetype=html syntax=html<cr>
 " Set syntax to CSS
 command! Setcss :set filetype=css syntax=css<cr>
 
-" Set syntax to CSS
+" Set syntax to SCSS
 command! Setscss :set filetype=scss syntax=scss<cr>
+
+" Tab moves line over
+nnoremap <Tab> >>_
+nnoremap <S-Tab> <<_
+inoremap <S-Tab> <C-D>
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
 
 """""""""""""""""""""""""""""""
 "	Tabularize
 "
-"if exists(":Tabularize")
-nnoremap <leader>a: :Tabularize /:\zs<cr>
-nnoremap <leader>a{ :Tabularize /{<cr>
-"endif
+if exists(":Tabularize")
+	nnoremap <leader>a: :Tabularize /:\zs<cr>
+	nnoremap <leader>a{ :Tabularize /{<cr>
+endif
 
 "  Split and Tab Controls
 if bufwinnr(1)
@@ -260,12 +309,12 @@ endif
 let g:indentLine_char = '.'
 
 """""""""""""""""""""""""""""""
-"	ctrlp
+"	CtrlP
 "
 let g:ctrlp_working_path_mode = 'r'
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_custom_ignore = '\v[\/](\.git|_site|node_modules)$'
+let g:ctrlp_custom_ignore = '\v[\/](\.git|_site|node_modules|\.swp)$'
 hi CtrlPMatch ctermbg=235 ctermfg=250 guibg=#99cccc guifg=#333333 cterm=NONE gui=NONE
 hi CtrlPPrtBase ctermbg=235 ctermfg=250 guibg=#ffcc66 guifg=#333333 cterm=NONE gui=NONE
 
@@ -322,3 +371,4 @@ endif
 "
 "   How to delete text in command line
 "   <c-w> or <c-u>
+"
